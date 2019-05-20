@@ -39,3 +39,13 @@ void ADamageTrapButton::ManageTrapActivation(UPrimitiveComponent* OverlappedComp
 		UE_LOG(LogTemp, Warning, TEXT("The button has not a trap reference"));
 	}
 }
+void ADamageTrapButton::ActivateButton()
+{
+	if (!bActive)
+	{
+		FVector newLocation = BaseMesh->GetComponentLocation();
+		newLocation.Z += 9;
+		ButtonMesh->SetWorldLocation(newLocation);
+		bActive = true;
+	}
+}
