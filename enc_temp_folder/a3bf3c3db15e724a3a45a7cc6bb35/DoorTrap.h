@@ -4,27 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "DamageTrap.h"
-#include "AxeTrap.generated.h"
-
+#include "DoorTrap.generated.h"
 class uStaticMeshComponent;
 class UCurveFloat;
-/**
- * 
- */
+class ADamageTrapButton;
 UCLASS()
-class MYPROJECT3_API AAxeTrap : public ADamageTrap
+class MYPROJECT3_API ADoorTrap : public ADamageTrap
 {
 	GENERATED_BODY()
 	
-public:
-	AAxeTrap();
+public:	
+	// Sets default values for this actor's properties
+	ADoorTrap();
 
 protected:
+	// Called when the game starts or when spawned
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Components")
 		UStaticMeshComponent* Mesh;
-	
+
 	// Timeline variables
 	UPROPERTY(EditDefaultsOnly, Category = "Timeline")
 		UCurveFloat* Curve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+		ADamageTrapButton* Button;
+
+
+	UFUNCTION(BlueprintCallable)
+		void ActivateButton();
 
 };

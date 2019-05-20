@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AxeTrap.h"
+#include "DoorTrap.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "DamageTrapButton.h"
 
-AAxeTrap::AAxeTrap()
+// Sets default values
+ADoorTrap::ADoorTrap()
 {
-
 	// Set mesh
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -18,4 +19,13 @@ AAxeTrap::AAxeTrap()
 	Collision->SetupAttachment(Mesh);
 
 	damage = 1.f;
+
 }
+void ADoorTrap::ActivateButton()
+{
+	if (Button)
+	{
+		Button->ActivateButton();
+	}
+}
+
