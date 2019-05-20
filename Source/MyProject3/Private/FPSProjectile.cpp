@@ -4,6 +4,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundBase.h"
 
 AFPSProjectile::AFPSProjectile() 
 {
@@ -35,7 +38,11 @@ AFPSProjectile::AFPSProjectile()
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetupAttachment(CollisionComp);
 }
-
+void AFPSProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AFPSProjectile::OverlapManage);
+}
 
 void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -44,7 +51,38 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 	}
-	//make the noise. The instigator is the pawn which spawns this projectile (the noise will still be made in the position of this actor)
-	MakeNoise(1.0f, Instigator);
-	Destroy();
+	if ((OtherActor != NULL) && (OtherActor != this))
+	{
+		//make the noise. The instigator is the pawn which spawns this projectile (the noise will still be made in the position of this actor)
+		MakeNoise(1.0f, Instigator);
+		if (ExplosionParticles)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetTransform());
+		}
+		if (ExplosionSound)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), ExplosionSound);
+		}
+		Destroy();
+	}
+}
+
+void AFPSProjectile::OverlapManage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (GetOwner()!=NULL)
+	{
+		if (OtherActor != NULL && (OtherActor != this) && OtherActor != GetOwner())
+		{
+			MakeNoise(1.0f, Instigator);
+			if (ExplosionParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetTransform());
+			}
+			if (ExplosionSound)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), ExplosionSound);
+			}
+			Destroy();
+		}
+	}
 }
