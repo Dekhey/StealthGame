@@ -4,6 +4,7 @@
 #include "DamageTrap.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "FireBall.h"
 // Sets default values
 ADamageTrapButton::ADamageTrapButton()
 {
@@ -29,6 +30,11 @@ void ADamageTrapButton::ManageTrapActivation(UPrimitiveComponent* OverlappedComp
 	{
 		if (bActive)
 		{
+			AFireBall* fireBall = Cast<AFireBall>(OtherActor);
+			if (fireBall)
+			{
+				fireBall->Explode();
+			}
 			Trap->ActivateTrap();
 			ButtonMesh->SetWorldLocation(BaseMesh->GetComponentLocation());
 			bActive = false;
